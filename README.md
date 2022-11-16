@@ -1,1 +1,2 @@
 # deltabot
+Trading bot engine
