@@ -1,7 +1,10 @@
 import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
-import { OrderReq, OrderSide } from '../types'
+import { ExchangeId } from 'ccxt'
+
+import { OrderReq } from '../types'
 import { parseError } from '../helpers'
+import { Ccxt } from '../ccxt'
 
 export const placeNewOrder = async (req: Request, res: Response) => {
   let {
@@ -11,7 +14,7 @@ export const placeNewOrder = async (req: Request, res: Response) => {
   }: {
     token: string
     orders: string
-    subAccountName: string | undefined
+    subAccountName?: string
   } = req.body
 
   let orders: OrderReq[] = eval(payload)
@@ -19,7 +22,8 @@ export const placeNewOrder = async (req: Request, res: Response) => {
   try {
     let prisma = new PrismaClient()
 
-    let user = await prisma.user.findUnique({
+    console.log({ orders })
+    let user = await prisma.user.findFirst({
       where: {
         token,
       },
@@ -29,7 +33,7 @@ export const placeNewOrder = async (req: Request, res: Response) => {
     })
 
     if (!user) {
-      return res.status(400).json({ msg: 'Invalid token' })
+      return res.status(400).json({ msg: 'Invalid token', success: false })
     }
 
     // let config = await prisma.config.findUnique({
@@ -45,17 +49,22 @@ export const placeNewOrder = async (req: Request, res: Response) => {
       ) || user.configs[0]
 
     if (!config) {
-      return res.status(400).json({ msg: 'No config found' })
+      return res.status(400).json({ msg: 'No config found', success: false })
     }
 
-    let { apiKey, secretKey } = config
+    let { apiKey, secret, exchangeId } = config
 
-    let ftx = new Ftx(apiKey, secretKey, config?.subAccountName || undefined)
+    let ccxt = new Ccxt(
+      exchangeId.toLowerCase() as ExchangeId,
+      apiKey,
+      secret,
+      config?.subAccountName || '',
+    )
 
     // get existing positions
-    let { positions, success, msg } = await ftx.getPositions()
+    let positions = await ccxt.fetchPositions()
 
-    console.log({ positions, success, msg })
+    console.log({ positions })
 
     // prepare orders
     let _orders: OrderReq[] = []
@@ -66,7 +75,7 @@ export const placeNewOrder = async (req: Request, res: Response) => {
       if (close) {
         // if close is true, then we need to find the position and close it
         let position = positions.find(
-          (p) =>
+          (p: any) =>
             p.market.toUpperCase().replaceAll('-', '') === market.toUpperCase(),
         )
 
@@ -83,10 +92,7 @@ export const placeNewOrder = async (req: Request, res: Response) => {
             chase,
             close,
             size: position.size,
-            side:
-              position.side.toLowerCase() === 'buy'
-                ? OrderSide.Sell
-                : OrderSide.Buy,
+            side: position.side.toLowerCase() === 'buy' ? 'sell' : 'buy',
             reduce_only: true,
           })
         }
@@ -149,24 +155,25 @@ export const placeNewOrder = async (req: Request, res: Response) => {
         // dollarize the size
 
         if (true) {
-          let price = await ftx.getPrice(o.market)
+          let { last, close } = await ccxt.fetchTicker(o.market)
+          let price = last || close
 
           if (!price) {
             let msg = `Failed to get price for ${o.market}`
             // sendMessage(msg, user!.tgId)
-            return res.status(400).json({ msg })
+            return res.status(400).json({ msg, success: false })
           }
 
           o.size = parseFloat((o.size / price).toFixed(6))
         }
 
-        let order = await ftx.placeNewOrder({
-          market: o.market,
-          side: o.side,
-          type: o.type,
-          size: o.size,
-          price: parseFloat(o.price.toFixed(4)),
-        })
+        let order = await ccxt.createOrder(
+          o.market,
+          o.type,
+          o.side,
+          o.size,
+          parseFloat(o.price.toFixed(4)),
+        )
 
         console.log({ order })
 
@@ -178,16 +185,11 @@ export const placeNewOrder = async (req: Request, res: Response) => {
 
         // if chase is true, then we need to modify the order until it is filled
         if (o?.chase) {
-          await ftx.chaseOrder({
-            id: order.id,
-            market: o.market,
-            side: o.side,
-          })
-
-          if (!success) {
-            // sendMessage(msg, user!.tgId)
-            return res.status(400).json({ msg })
-          }
+          // await ccxt.modifyOrder(order.id, o.market, o.side)
+          // if (!success) {
+          //   // sendMessage(msg, user!.tgId)
+          //   return res.status(400).json({ msg })
+          // }
         }
       } catch (error) {
         console.log(error)

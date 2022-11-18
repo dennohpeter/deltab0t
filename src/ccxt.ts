@@ -1,7 +1,8 @@
-import ccxt, { ExchangeId, Order } from 'ccxt'
+import ccxt, { ExchangeId, Order, Exchange } from 'ccxt'
 
-class Ccxt {
-  private exchange
+export class Ccxt {
+  private client: Exchange
+
   constructor(
     exchangeId: ExchangeId,
     apiKey: string,
@@ -10,7 +11,7 @@ class Ccxt {
   ) {
     let exchangeClass = ccxt[exchangeId]
 
-    this.exchange = new exchangeClass({
+    this.client = new exchangeClass({
       apiKey,
       secret,
       subAccountName,
@@ -18,27 +19,27 @@ class Ccxt {
   }
 
   fetchBalance = async () => {
-    return await this.exchange.fetchBalance()
+    return await this.client.fetchBalance()
   }
 
   fetchTicker = async (symbol: string) => {
-    return await this.exchange.fetchTicker(symbol)
+    return await this.client.fetchTicker(symbol)
   }
 
   fetchPositions = async () => {
-    return await this.exchange.fetchPositions()
+    return await this.client.fetchPositions()
   }
 
   fetchOpenOrders = async (symbol?: string) => {
-    return await this.exchange.fetchOpenOrders(symbol)
+    return await this.client.fetchOpenOrders(symbol)
   }
 
   cancelOrder = async (id: string, symbol?: string) => {
-    return await this.exchange.cancelOrder(id, symbol)
+    return await this.client.cancelOrder(id, symbol)
   }
 
   cancelAllOrders = async (symbol?: string) => {
-    return await this.exchange.cancelAllOrders(symbol)
+    return await this.client.cancelAllOrders(symbol)
   }
 
   createOrder = async (
@@ -49,7 +50,7 @@ class Ccxt {
     price?: number,
     params?: any,
   ) => {
-    return await this.exchange.createOrder(
+    return await this.client.createOrder(
       symbol,
       type,
       side,
@@ -68,12 +69,12 @@ class Ccxt {
     price?: number,
     params?: any,
   ) => {
-    if (!this.exchange.hasEditOrder) {
+    if (!this.client.hasEditOrder) {
       // TODO: cancel and re-place order
-      throw new Error(`${this.exchange.id} does not support modify order`)
+      throw new Error(`${this.client.id} does not support modify order`)
     }
 
-    return await this.exchange.editOrder(
+    return await this.client.editOrder(
       id,
       symbol,
       type,
