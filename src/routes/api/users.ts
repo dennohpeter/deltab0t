@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { check } from 'express-validator'
 import { createNewUser } from '../../controller'
+import { validateRequest } from '../../middleware'
 
 const router = Router()
 
@@ -13,6 +14,7 @@ router.post(
       .isEmpty()
       .isMobilePhone('en-KE', { strictMode: true }),
   ],
+  validateRequest,
   createNewUser,
 )
 

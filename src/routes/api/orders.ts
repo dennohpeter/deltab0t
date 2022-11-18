@@ -14,12 +14,12 @@ router.post(
       .isEmpty()
       .isIn(['buy', 'sell']),
     check('orders.*.symbol', 'Symbol is required').not().isEmpty().isString(),
-    check('orders.*.type', 'type is required')
+    check('orders.*.type', 'Type is required')
       .not()
       .isEmpty()
       .isIn(['limit', 'market']),
-    check('orders.*.size', 'size is required').not().isEmpty().isFloat(),
-    check('orders.*.price', 'price is required').not().isEmpty().isFloat(),
+    check('orders.*.size', 'Size is required').not().isEmpty().isFloat(),
+    check('orders.*.price', 'Price is required').not().isEmpty().isFloat(),
   ],
   validateRequest,
   placeNewOrder,
