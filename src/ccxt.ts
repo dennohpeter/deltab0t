@@ -27,7 +27,11 @@ export class Ccxt {
   }
 
   fetchPositions = async (symbols?: string[]) => {
-    return await this.client.fetchPositions(symbols)
+    let positions = await this.client.fetchPositions(symbols)
+    return positions.filter(
+      (p: { notional: number; openSize: number }) =>
+        (p.notional || p.openSize) > 0,
+    )
   }
 
   fetchOpenOrders = async (symbol?: string) => {

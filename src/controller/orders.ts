@@ -30,6 +30,8 @@ export const placeNewOrder = async (req: Request, res: Response) => {
     price: number // entry price
     chase?: boolean // chase the price
     dollarize?: boolean // convert size to usdt
+    reduceOnly?: boolean // reduce only
+    reduce_only?: boolean // reduce only
   }[] = eval(payload)
 
   try {
@@ -196,6 +198,8 @@ const _placeOrder = async (
     price: number
     chase?: boolean
     dollarize?: boolean
+    reduceOnly?: boolean
+    reduce_only?: boolean
   },
   ccxt: Ccxt,
 ) => {
@@ -214,12 +218,17 @@ const _placeOrder = async (
       o.size = parseFloat((o.size / price).toFixed(6))
     }
 
+    let params = {
+      reduceOnly: o?.reduceOnly,
+      reduce_only: o?.reduce_only,
+    }
     let order = await ccxt.createOrder(
       o.symbol,
       o.type,
       o.side,
       o.size,
       parseFloat(o.price.toFixed(4)),
+      params,
     )
 
     return { msg: 'Order placed', data: order, success: true }
