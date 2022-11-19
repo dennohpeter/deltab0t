@@ -1,7 +1,7 @@
 import { Application } from 'express'
 
 export const configureRoutes = (app: Application) => {
-  //   app.use('/tradingbot/api/auth', require('./api/auth'))
+  app.use('/api/v1/account', require('./api/account'))
   app.use('/api/v1/users', require('./api/users'))
   app.use('/api/v1/orders', require('./api/orders'))
 
