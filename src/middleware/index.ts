@@ -1,2 +1,2 @@
 export * from './config'
-export * from './validate-request'
+export * from './validators'

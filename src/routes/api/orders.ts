@@ -1,7 +1,12 @@
 import { Router } from 'express'
 import { check } from 'express-validator'
-import { placeNewOrder } from '../../controller'
-import { validateRequest } from '../../middleware'
+import {
+  cancelOrder,
+  fetchOpenOrders,
+  fetchPositions,
+  placeNewOrder,
+} from '../../controller'
+import { validateRequest, validateToken } from '../../middleware'
 
 const router = Router()
 
@@ -23,6 +28,38 @@ router.post(
   ],
   validateRequest,
   placeNewOrder,
+)
+
+router.post(
+  '/cancel',
+  validateToken,
+  [
+    check('orderId', 'Order id is required').not().isEmpty().isString(),
+    check('symbol', 'Symbol is required').not().isEmpty().isString(),
+    check('configId', 'Config id is required').not().isEmpty().isString(),
+  ],
+  validateRequest,
+  cancelOrder,
+)
+
+router.post(
+  '/open',
+  validateToken,
+  [
+    check('symbol', 'Symbol is required').not().isEmpty().isString(),
+    check('configId', 'Config id is required').not().isEmpty().isString(),
+  ],
+
+  validateRequest,
+  fetchOpenOrders,
+)
+
+router.post(
+  '/positions',
+  validateToken,
+  [check('configId', 'Config id is required').not().isEmpty().isString()],
+  validateRequest,
+  fetchPositions,
 )
 
 module.exports = router

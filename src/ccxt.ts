@@ -26,8 +26,8 @@ export class Ccxt {
     return await this.client.fetchTicker(symbol)
   }
 
-  fetchPositions = async () => {
-    return await this.client.fetchPositions()
+  fetchPositions = async (symbols?: string[]) => {
+    return await this.client.fetchPositions(symbols)
   }
 
   fetchOpenOrders = async (symbol?: string) => {
