@@ -1,0 +1,30 @@
+{
+  "components": {
+    "examples": {},
+    "headers": {},
+    "parameters": {},
+    "requestBodies": {},
+    "responses": {},
+    "schemas": {},
+    "securitySchemes": {}
+  },
+  "info": {
+    "title": "DeltaBot API",
+    "version": "0.1.0",
+    "description": "API for DeltaBot",
+    "license": {
+      "name": "Apache 2.0"
+    },
+    "contact": {
+      "name": "Dennoh Peter",
+      "email": "mail@dennohpeter.com"
+    }
+  },
+  "openapi": "3.0.0",
+  "paths": {},
+  "servers": [
+    {
+      "url": "/"
+    }
+  ]
+}

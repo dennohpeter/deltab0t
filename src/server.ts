@@ -4,8 +4,21 @@ import { cpus } from 'os'
 import cluster from 'cluster'
 import { configureMiddleware } from './middleware'
 import { configureRoutes } from './routes'
+import swaggerJSDoc from 'swagger-jsdoc'
+import { serve, setup } from 'swagger-ui-express'
+import { swaggerOptions } from './docs'
 
 const app = express()
+
+// Configure api docs
+app.use(
+  '/docs',
+  serve,
+  setup(swaggerJSDoc(swaggerOptions), {
+    explorer: true,
+    customSiteTitle: 'Delta Bot API',
+  }),
+)
 
 // Config Express middleware
 configureMiddleware(app)
