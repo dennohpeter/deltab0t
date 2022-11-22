@@ -72,8 +72,6 @@ export const placeNewOrder = async (req: Request, res: Response) => {
       // get existing positions
       let positions = await ccxt.fetchPositions()
 
-      console.log({ positionCount: positions.length })
-
       await Promise.all(
         orders.map(async (o) => {
           let position = positions.find(
