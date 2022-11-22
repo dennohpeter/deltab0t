@@ -10,6 +10,32 @@ import { validateRequest, validateToken } from '../../middleware'
 
 const router = Router()
 
+/**
+ * @openapi
+ * /api/v1/orders/new:
+ *  post:
+ *    summary: Create new order
+ *    tags:
+ *        - Orders
+ *    description: Creates a new order in the specifiend or default subaccount
+ *    produces:
+ *      - application/json
+ *    consumes:
+ *      - application/json
+ *    parameters:
+ *      - name: token
+ *        description: authorization token
+ *      - name: orders
+ *        description: A list of orders to place on the exchange
+ *
+ *    responses:
+ *      200:
+ *          description: Order placed successully
+ *
+ *      400:
+ *          description: Bad Request
+ *
+ */
 router.post(
   '/new',
   [
@@ -30,6 +56,32 @@ router.post(
   placeNewOrder,
 )
 
+/**
+ * @openapi
+ * /api/v1/orders/cancel:
+ *  post:
+ *    summary: Cancel order by id
+ *    tags:
+ *        - Orders
+ *    description: Cancel order by id
+ *    produces:
+ *      - application/json
+ *    consumes:
+ *      - application/json
+ *    parameters:
+ *      - name: orderId
+ *        description: Id of the order to cancel
+ *      - name: symbol
+ *        description: Symbol
+ *      - name: configId
+ *        description: Id of the configuration to use
+ *
+ *    responses:
+ *      200:
+ *        description: Order cancelled succesfully
+ *      400:
+ *        description: Bad Request
+ */
 router.post(
   '/cancel',
   validateToken,
@@ -54,6 +106,29 @@ router.post(
   fetchOpenOrders,
 )
 
+/**
+ * @openapi
+ * /api/v1/orders/positions:
+ *  post:
+ *    summary: Fetch orders in position
+ *    tags:
+ *        - Orders
+ *    description: Fetch order from exchange that have been filled
+ *    produces:
+ *      - application/json
+ *    consumes:
+ *      - application/json
+ *    parameters:
+ *      - name: configId
+ *        description: Id of the configuration to use to get orders
+ *
+ *    responses:
+ *      200:
+ *        description: Orders in position
+ *      400:
+ *        description: Bad Request
+ *
+ */
 router.post(
   '/positions',
   validateToken,

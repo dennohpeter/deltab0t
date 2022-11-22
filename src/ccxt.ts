@@ -1,4 +1,6 @@
 import ccxt, { ExchangeId, Order, Exchange } from 'ccxt'
+import { AES, enc } from 'crypto-js'
+import { config } from './config'
 
 export class Ccxt {
   private client: Exchange
@@ -10,6 +12,9 @@ export class Ccxt {
     subAccountName?: string | undefined,
   ) {
     let exchangeClass = ccxt[exchangeId]
+
+    apiKey = AES.decrypt(apiKey, config.HASH_SECRET).toString(enc.Utf8)
+    secret = AES.decrypt(secret, config.HASH_SECRET).toString(enc.Utf8)
 
     this.client = new exchangeClass({
       apiKey,

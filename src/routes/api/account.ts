@@ -6,8 +6,53 @@ import { validateRequest, validateToken } from '../../middleware'
 
 const router = Router()
 
-router.post('/balances', validateToken, fetchBalance)
+/**
+ * @openapi
+ * /api/v1/account/balances:
+ *  get:
+ *    summary: Fetch account balances
+ *    tags:
+ *        - Account
+ *    description: Fetch account balances
+ *    produces:
+ *      - application/json
+ *    consumes:
+ *      - application/json
+ *
+ *
+ *    responses:
+ *     200:
+ *      description: Account balances fetched successfully
+ *
+ */
+router.get('/balances', validateToken, fetchBalance)
 
+/**
+ * @openapi
+ * /api/v1/account/config/new:
+ *  post:
+ *    summary: Create a new configuration
+ *    tags:
+ *        - Account
+ *    description: Create a new configuration
+ *    produces:
+ *      - application/json
+ *    consumes:
+ *      - application/json
+ *    parameters:
+ *      - name: apiKey
+ *        description: Subaccount API key
+ *      - name: secret
+ *        description: Subaccount secret
+ *      - name: exchangeId
+ *        description: Exchange ID
+ *
+ *    responses:
+ *      200:
+ *        description: Config created successfully
+ *      400:
+ *        description: Bad request
+ */
 router.post(
   '/config/new',
   validateToken,

@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import { parseError } from '../helpers'
 import { UserCreateInput } from '../types'
 import { sign } from 'jsonwebtoken'
+import { AES } from 'crypto-js'
 import { config } from '../config'
 
 const prisma = new PrismaClient()
@@ -98,10 +99,13 @@ export const createConfig = async (req: Request, res: Response) => {
       return res.status(400).json({ msg: 'User not found' })
     }
 
+    let hashedApiKey = AES.encrypt(apiKey, config.HASH_SECRET).toString()
+    let hashedSecret = AES.encrypt(secret, config.HASH_SECRET).toString()
+
     await prisma.config.create({
       data: {
-        apiKey,
-        secret,
+        apiKey: hashedApiKey,
+        secret: hashedSecret,
         exchangeId,
         subAccountName,
         user: {
