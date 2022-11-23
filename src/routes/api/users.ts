@@ -10,7 +10,7 @@ router.get('/', validateToken, getCurrentUser)
 
 /**
  * @openapi
- * /api/v1/users/new:
+ * /api/users/new:
  *  post:
  *    summary: Create a new user
  *    tags:
@@ -50,7 +50,7 @@ router.post(
 
 /**
  * @openapi
- * /api/v1/users/login:
+ * /api/users/login:
  *  post:
  *    summary: Login a user
  *    tags:

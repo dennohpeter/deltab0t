@@ -12,7 +12,7 @@ const router = Router()
 
 /**
  * @openapi
- * /api/v1/orders/new:
+ * /api/orders/new:
  *  post:
  *    summary: Create new order
  *    tags:
@@ -58,7 +58,7 @@ router.post(
 
 /**
  * @openapi
- * /api/v1/orders/cancel:
+ * /api/orders/cancel:
  *  post:
  *    summary: Cancel order by id
  *    tags:
@@ -108,7 +108,7 @@ router.post(
 
 /**
  * @openapi
- * /api/v1/orders/positions:
+ * /api/orders/positions:
  *  post:
  *    summary: Fetch orders in position
  *    tags:
